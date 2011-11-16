@@ -69,16 +69,17 @@ var map;
 
 function initialize() {
   var myOptions = {
-    zoom: 12,
+    zoom: 14,
     disableDoubleClickZoom : true,
     scrollwheel: false,
-    
+    draggable: false,
     mapTypeControlOptions: {
       mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'dark_map']
       }
   };
   
-  map = new google.maps.Map(document.getElementById('yourworld'), myOptions);
+  map = new google.maps.Map(document.getElementById('mapcanvas'), myOptions);
+  // map = new google.maps.Map(document.getElementById('yourworld'), myOptions);
 
   map.mapTypes.set('dark_map', darkMapType);
   map.setMapTypeId('dark_map');
@@ -89,10 +90,16 @@ function initialize() {
       var pos = new google.maps.LatLng(position.coords.latitude,
                                        position.coords.longitude);
 
+
+      var marker = new google.maps.Marker({
+                  map: map,
+                  position: pos,
+              });
+
       // var infowindow = new google.maps.InfoWindow({
       //   map: map,
       //   position: pos,
-      //   content: 'Location found using HTML5.'
+      //   content: '<b>You are here.</b>'
       // });
 
       map.setCenter(pos);
@@ -117,6 +124,8 @@ function handleNoGeolocation(errorFlag) {
     position: new google.maps.LatLng(60, 105),
     content: content
   };
+
+
 
   // var infowindow = new google.maps.InfoWindow(options);
   map.setCenter(options.position);

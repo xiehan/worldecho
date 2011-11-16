@@ -39,10 +39,13 @@ YourWorld.helpers = function() {
         document.getElementsByTagName("head")[0].appendChild(styleElement);
 		return styleElement;
     };
+
     
     var getNodeIndex = function(node) {
         return $(node).parent().children().index(node);
     };
+
+
     
     obj.getCellCoords = function(td) {
         // Given a TD node, returns [tileY, tileX, charY, charX] of that TD
@@ -576,6 +579,7 @@ YourWorld.World = function() {
 		var scroller = function() {
 			// We have to recalculate the move every time, or else imprecision will take
 			// us off-target over long distances
+
 			var coords = getCenterCoords();
 			var centerY = coords[0],
 				centerX = coords[1];

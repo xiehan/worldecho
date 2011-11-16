@@ -36,6 +36,9 @@ function makeScrollable(container, scrollBy) {
     };
 
     var scrollTo = function(dx, dy){
+        console.log('scrollby', dx, dy);
+        map.panBy(dx, dy);
+
         scrollBy(dx, dy);                        
     };
  
