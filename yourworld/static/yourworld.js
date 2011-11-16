@@ -1,4 +1,4 @@
-// File: yourworld.js
+// File: yourworld.js 
 // Author: Andrew Badr <andrewbadr@gmail.com>
 
 var YourWorld = {};
@@ -918,7 +918,7 @@ YourWorld.World = function() {
         _container.css('position', 'relative');
         _container.css('fontFamily', 'Courier New');
         _container.css('overflow', 'hidden');
-        _container.css('background', '#ddd');
+        // _container.css('background', '#ddd');
         _container.height($(window).height());
         _container.width($(window).width());
         _config = YourWorld.Config(_container);
