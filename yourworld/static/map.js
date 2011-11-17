@@ -67,9 +67,14 @@ var darkMapType = new google.maps.StyledMapType(darkMapStyle,
 
 var map;
 
+var centerOfWorld; 
+var initialUserPos;
+var pixelWorldCenter, pixelUser;
+
 function initialize() {
   var myOptions = {
-    zoom: 17,
+    // zoom: 17,
+    zoom: 14,
     disableDoubleClickZoom : true,
     scrollwheel: false,
     draggable: false,
@@ -79,7 +84,8 @@ function initialize() {
   };
   
   map = new google.maps.Map(document.getElementById('mapcanvas'), myOptions);
-
+  
+  var overlay;
 
   map.mapTypes.set('dark_map', darkMapType);
   map.setMapTypeId('dark_map');
@@ -87,15 +93,15 @@ function initialize() {
   // Try HTML5 geolocation
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      var pos = new google.maps.LatLng(position.coords.latitude,
-                                       position.coords.longitude);
+      var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      initialUserPos =pos;
 
       var marker = new google.maps.Marker({
                   map: map,
                   position: pos,
               });
 
-      var centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);
+      centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);
 
       var infowindow = new google.maps.InfoWindow({
         map: map,
@@ -107,8 +113,14 @@ function initialize() {
         map.setCenter(pos);
         distanceFromCenter=  google.maps.geometry.spherical.computeDistanceBetween(centerOfWorld, pos);
 
-        console.log('distancefrom center:');
+        console.log('distancefrom center in meters:');
         console.log(distanceFromCenter);
+
+        overlay = new ywotOverlay(map);
+
+        console.log('distancefrom center in pix:');
+        // console.log(pixelDistanceFromCenter);
+
 
     }, function() {
       handleNoGeolocation(true);
@@ -120,12 +132,39 @@ function initialize() {
 }
 
 
+function ywotOverlay(map) {
+  this.map_ = map;
+  this.div_ = null;
+  this.setMap(map);
+}
+
+ywotOverlay.prototype = new google.maps.OverlayView();
+
+ywotOverlay.prototype.draw = function() {
+  console.log('drawing our overlay');
+  var overlayProjection = this.getProjection();
+  console.log(overlayProjection)
+
+  var div = document.createElement('DIV');
+  var panes = this.getPanes();
+  panes.overlayLayer.appendChild(div);
+
+  pixelWorldCenter = overlayProjection.fromLatLngToDivPixel(centerOfWorld);
+  console.log('pixelWorldCenter',pixelWorldCenter);
+
+  pixelUser = overlayProjection.fromLatLngToDivPixel(initialUserPos);
+  console.log('pixelUser',pixelUser);
+
+  //this probably isn't the place for this, but whatever
+  YourWorld.World.JumpToGmapsPix();
+}
+
 
 function handleNoGeolocation(errorFlag) {
   if (errorFlag) {
-    var content = 'Error: The Geolocation service failed.';
+    var content = '<b>Error: The Geolocation service failed.</b>';
   } else {
-    var content = 'Error: Your browser doesn\'t support geolocation.';
+    var content = '<b>Error: Your browser doesn\'t support geolocation.</b>';
   }
 
   var options = {
