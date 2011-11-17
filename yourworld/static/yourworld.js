@@ -263,6 +263,7 @@ YourWorld.World = function() {
         var numAcross = _container.width()/_config.tileWidth();
         var centerY = minVisY + numDown/2;
         var centerX = minVisX + numAcross/2;
+        // console.log('centercoords', centerY, centerX);
 		return [centerY, centerX];
 	};
 

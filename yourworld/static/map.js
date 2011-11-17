@@ -61,15 +61,15 @@ var darkMapStyle=[
   }
 ];
 
-  var darkMapType = new google.maps.StyledMapType(darkMapStyle,
-    {name: "Dark Maps"});
+var darkMapType = new google.maps.StyledMapType(darkMapStyle,
+  {name: "Dark Maps"});
 
 
 var map;
 
 function initialize() {
   var myOptions = {
-    zoom: 14,
+    zoom: 17,
     disableDoubleClickZoom : true,
     scrollwheel: false,
     draggable: false,
@@ -79,7 +79,7 @@ function initialize() {
   };
   
   map = new google.maps.Map(document.getElementById('mapcanvas'), myOptions);
-  // map = new google.maps.Map(document.getElementById('yourworld'), myOptions);
+
 
   map.mapTypes.set('dark_map', darkMapType);
   map.setMapTypeId('dark_map');
@@ -90,19 +90,26 @@ function initialize() {
       var pos = new google.maps.LatLng(position.coords.latitude,
                                        position.coords.longitude);
 
-
       var marker = new google.maps.Marker({
                   map: map,
                   position: pos,
               });
 
-      // var infowindow = new google.maps.InfoWindow({
-      //   map: map,
-      //   position: pos,
-      //   content: '<b>You are here.</b>'
-      // });
+      var centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);
 
-      map.setCenter(pos);
+      var infowindow = new google.maps.InfoWindow({
+        map: map,
+        position: centerOfWorld,
+        content: '<b>The center of the world.</b>',
+        disableAutoPan: true
+      });
+
+        map.setCenter(pos);
+        distanceFromCenter=  google.maps.geometry.spherical.computeDistanceBetween(centerOfWorld, pos);
+
+        console.log('distancefrom center:');
+        console.log(distanceFromCenter);
+
     }, function() {
       handleNoGeolocation(true);
     });
@@ -111,6 +118,8 @@ function initialize() {
     handleNoGeolocation(false);
   }
 }
+
+
 
 function handleNoGeolocation(errorFlag) {
   if (errorFlag) {
@@ -121,13 +130,11 @@ function handleNoGeolocation(errorFlag) {
 
   var options = {
     map: map,
-    position: new google.maps.LatLng(60, 105),
+    position: new google.maps.LatLng(40.7294317, -73.99358870000003),
     content: content
   };
 
-
-
-  // var infowindow = new google.maps.InfoWindow(options);
+  var infowindow = new google.maps.InfoWindow(options);
   map.setCenter(options.position);
 }
 

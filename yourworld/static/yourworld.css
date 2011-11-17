@@ -18,6 +18,11 @@ body {
     position: fixed !important;
 }
 
+#mapcanvas b
+{
+    color: black;
+}
+
 img
 {
     border: 0;
