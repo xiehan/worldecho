@@ -67,14 +67,14 @@ var darkMapType = new google.maps.StyledMapType(darkMapStyle,
 
 var map;
 
-var centerOfWorld; 
+var centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);  //ITP's location, duh
 var initialUserPos;
 var pixelWorldCenter, pixelUser;
 
 function initialize() {
   var myOptions = {
-    // zoom: 17,
-    zoom: 14,
+    zoom: 16,
+    // zoom: 11,
     disableDoubleClickZoom : true,
     scrollwheel: false,
     draggable: false,
@@ -94,14 +94,15 @@ function initialize() {
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      
       initialUserPos =pos;
+
 
       var marker = new google.maps.Marker({
                   map: map,
                   position: pos,
               });
 
-      centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);
 
       var infowindow = new google.maps.InfoWindow({
         map: map,
