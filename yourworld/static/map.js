@@ -68,6 +68,11 @@ var darkMapType = new google.maps.StyledMapType(darkMapStyle,
 var map;
 
 var centerOfWorld= new google.maps.LatLng(40.7294317, -73.99358870000003);  //ITP's location, duh
+var myHouse = new google.maps.LatLng(40.6795338, -73.98078750000002);
+var testpos = new google.maps.LatLng(40.750313,-74.001396); // chelsea
+
+var haveOffset = 0;
+
 var initialUserPos;
 var pixelWorldCenter, pixelUser;
 
@@ -93,14 +98,19 @@ function initialize() {
   // Try HTML5 geolocation
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    initialUserPos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+      //for testing.
+    // initialUserPos= myHouse;
+    // initialUserPos= centerOfWorld;
+    initialUserPos= testpos;
       
-      initialUserPos =pos;
+      console.log('initialUserPos', initialUserPos)
 
 
       var marker = new google.maps.Marker({
                   map: map,
-                  position: pos,
+                  position: initialUserPos,
               });
 
 
@@ -111,15 +121,15 @@ function initialize() {
         disableAutoPan: true
       });
 
-        map.setCenter(pos);
-        distanceFromCenter=  google.maps.geometry.spherical.computeDistanceBetween(centerOfWorld, pos);
+        map.setCenter(initialUserPos);
 
-        console.log('distancefrom center in meters:');
-        console.log(distanceFromCenter);
+        // distanceFromCenter=  google.maps.geometry.spherical.computeDistanceBetween(centerOfWorld, initialUserPos);
+        // console.log('distancefrom center in meters:');
+        // console.log(distanceFromCenter);
 
         overlay = new ywotOverlay(map);
 
-        console.log('distancefrom center in pix:');
+        // console.log('distancefrom center in pix:');
         // console.log(pixelDistanceFromCenter);
 
 
@@ -156,8 +166,17 @@ ywotOverlay.prototype.draw = function() {
   pixelUser = overlayProjection.fromLatLngToDivPixel(initialUserPos);
   console.log('pixelUser',pixelUser);
 
+  //move the textworld to mapworld based on pixel difference
   //this probably isn't the place for this, but whatever
-  YourWorld.World.JumpToGmapsPix();
+ 
+ // I think the bug comes from this getting executed before enough of the offscreen tiles have loaded
+  if (!haveOffset)
+  {
+      console.log('OFFSETTTINGGGGGgg');
+      YourWorld.World.JumpToGmapsPix();
+      haveOffset=1;
+  }
+  //and a new bug, sometimes the overlay get redrawn, so I'm moving this
 }
 
 
@@ -167,10 +186,10 @@ function handleNoGeolocation(errorFlag) {
   } else {
     var content = '<b>Error: Your browser doesn\'t support geolocation.</b>';
   }
-
+ 
   var options = {
     map: map,
-    position: new google.maps.LatLng(40.7294317, -73.99358870000003),
+    position: new google.maps.LatLng(-69.821392, -75.329819), //antartica, teeeheeee
     content: content
   };
 

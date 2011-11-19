@@ -6,6 +6,7 @@ var YourWorld = {};
 // Shortcut for public API
 window.InitWorld = function() {
     YourWorld.World.init.apply(null, arguments);
+
 };
 
 YourWorld.helpers = function() {
@@ -173,12 +174,17 @@ YourWorld.World = function() {
 
     //Public method, originally for testing. sloppy but hey, we're going to rewrite this anyway, right?
     obj.JumpToGmapsPix = function(){
-        console.log('hi cool test yo');
         var diffX = pixelUser.x- pixelWorldCenter.x;
         var diffY = pixelUser.y- pixelWorldCenter.y;
         console.log('diffx', diffX);
         console.log('diffy', diffY);
-        jumpToPixPos(diffX, diffY);
+        
+        // jumpToPixPos(diffX, diffY);
+        doGoToPix(diffX, diffY);
+        
+        console.log('dogotopix executed');
+        //x seems fine, y isn't moving nearly far enough
+        //of course the x isn't very different so maybe that doesn't work either. that'd make more
 
     }
 
@@ -278,6 +284,19 @@ YourWorld.World = function() {
         console.log('centercoords', centerY, centerX);
 		return [centerY, centerX];
 	};
+
+
+    var getCenterYX = function() {
+        // Returns the Y,X coordinates, in Tile units, of the center of the screen;
+        var minVisY = (_container.scrollTop() - _state.offsetY) ;
+        var minVisX = (_container.scrollLeft() - _state.offsetX);
+        var numDown = _container.height();
+        var numAcross = _container.width();
+        var centerY = minVisY + numDown/2;
+        var centerX = minVisX + numAcross/2;
+        console.log('centercoords', centerY, centerX);
+        return [centerY, centerX];
+    };
 
     var getMandatoryTiles = function() {
         // A list of [tileY, tileX] pairs that must be rendered, in -->,V order
@@ -402,6 +421,7 @@ YourWorld.World = function() {
         }
         _ui.paused.hide();
         var bounds = getMandatoryBounds();
+        //  maybe we can mess with this
         jQuery.ajax({
             type: 'GET',
             url: window.location.pathname,
@@ -619,12 +639,69 @@ YourWorld.World = function() {
 		$(document).trigger('YWOT_GoToCoord_start');
 	};
 
-    //the above scrolling function is too slow for us
+    //the above scrolling function is too slow for us BUT gave things time to load...
     var jumpToPixPos = function(xMove, yMove)
     {
         scrollLeftBy(xMove);
         scrollUpBy(yMove);
     };
+
+    //same as doGoToCoord, but for pixels....
+    var doGoToPix = function(x, y) {
+        // y *= -4; // inverting the setcoords transform
+        // x *= 4;
+        // y += 2; // Put the target in the middle of the user-tile instead of the corner
+        // x += 2;
+        // TODO: How can we encapusulate this whole feature better?
+        if (!_state.goToCoord.initted) {
+            _state.goToCoord.cancel = function() {
+                clearInterval(_state.goToCoord.interval);
+                _state.lastEvent = new Date().getTime(); // unpause if paused
+                $(document).trigger('YWOT_GoToCoord_stop');
+            };
+
+            // $(document).bind('YWOT_GoToCoord_start', function() {
+            //         $(document).bind('mousedown', _state.goToCoord.cancel); // 'click' event flaky while scrolling
+            //         });
+            // $(document).bind('YWOT_GoToCoord_stop', function() {
+            //         $(document).unbind('mousedown', _state.goToCoord.cancel);
+            //         });
+            _state.goToCoord.initted = true;
+        }
+
+
+        console.log('centerCOOrds',getCenterCoords());
+
+        var scroller = function() {
+            // We have to recalculate the move every time, or else imprecision will take
+            // us off-target over long distances
+
+            var coords = getCenterYX();
+            var centerY = coords[0],
+                centerX = coords[1];
+
+            var yDiff = y - centerY;
+            var xDiff = x - centerX;
+
+            var distance = YourWorld.helpers.vectorLen(yDiff, xDiff);
+            var yMove = Math.round(yDiff*200/distance); // normalize, then scale to 10px
+            var xMove = Math.round(xDiff*200/distance); //both were 20
+            if (YourWorld.helpers.vectorLen(yDiff, xDiff) < 250) { // 40 pixels w/in target (arbitrary)
+                scrollUpBy(yDiff);
+                scrollLeftBy(xDiff);
+
+                _state.goToCoord.cancel();
+                return;
+            }
+            yDiff = yDiff - yMove;
+            scrollUpBy(yMove);
+            xDiff = xDiff - xMove;
+            scrollLeftBy(xMove);
+        };
+        _state.goToCoord.interval = setInterval(scroller, 25); // 1000/25=40 per second * 20px = 800px/s speed
+        $(document).trigger('YWOT_GoToCoord_start');
+    };
+
 
 
 	var getCoordInput = function(title, callback) {
