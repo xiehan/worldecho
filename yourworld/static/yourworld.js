@@ -660,12 +660,17 @@ YourWorld.World = function() {
                 $(document).trigger('YWOT_GoToCoord_stop');
             };
 
-            // $(document).bind('YWOT_GoToCoord_start', function() {
-            //         $(document).bind('mousedown', _state.goToCoord.cancel); // 'click' event flaky while scrolling
-            //         });
-            // $(document).bind('YWOT_GoToCoord_stop', function() {
-            //         $(document).unbind('mousedown', _state.goToCoord.cancel);
-            //         });
+            $(document).bind('YWOT_GoToCoord_start', function() {
+                    // console.log('gotopix start');
+
+                    // $(document).bind('mousedown', _state.goToCoord.cancel); // 'click' event flaky while scrolling
+                    });
+            $(document).bind('YWOT_GoToCoord_stop', function() {
+                    // console.log('gotopix end!!!!1111');
+                    $("#yourworld").addClass('haveOffset');
+                    $("#loadingIndicator").fadeOut();
+                    // $(document).unbind('mousedown', _state.goToCoord.cancel);
+                    });
             _state.goToCoord.initted = true;
         }
 

@@ -98,6 +98,8 @@ function initialize() {
   // Try HTML5 geolocation
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
+    $("#geoReminder").fadeOut();
+
     initialUserPos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
       //for testing.
@@ -194,6 +196,7 @@ function handleNoGeolocation(errorFlag) {
   };
 
   var infowindow = new google.maps.InfoWindow(options);
+
   map.setCenter(options.position);
 }
 

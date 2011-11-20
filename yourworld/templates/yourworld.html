@@ -27,7 +27,16 @@
     Y: <span id="coord_Y"></span>
 </div>
 
-<h1 id="loading">Loading...</h1>
+<!-- <h1 id="loading">Loading...</h1> -->
+<div id="geoReminder">
+    <h3>Trying to find your location</h3> 
+        <p>If asked, please click <b>Allow</b> above to use your location.</p><p> Otherwise, you can't use the site.</p></div>
+
+<div id="loadingIndicator">
+    <h1>Loading...</h1>
+    <p>Why not take a nice break from looking at your screen for a moment.</p>
+</div>
+
 
 <div id="yourworld">
     <div id="mapcanvas"></div>
@@ -51,7 +60,7 @@
     var menu = $.Menu($('#menu'), $('#nav'));
     var state = {{ state|safe }};
     InitWorld(document.getElementById('yourworld'), menu, state);
-    
+
   });
 </script>
 
